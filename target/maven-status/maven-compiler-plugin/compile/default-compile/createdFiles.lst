@@ -1,0 +1,8 @@
+com\SwiftEdgeCDN\controller\ServiceController.class
+com\SwiftEdgeCDN\service\CdnProxyService.class
+com\SwiftEdgeCDN\service\MetricsService.class
+com\SwiftEdgeCDN\service\RateLimitService.class
+com\SwiftEdgeCDN\controller\MetricsController.class
+com\SwiftEdgeCDN\controller\PurgeController.class
+com\SwiftEdgeCDN\exception\GlobalExceptionHandler.class
+com\SwiftEdgeCDN\ServiceCdnApplication.class

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwiftEdgeCDN Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* ════════════════════════════════════════════════════════════
+   1. DESIGN TOKENS  (Catppuccin Mocha)
+   ════════════════════════════════════════════════════════════ */
+        :root {
+            --editor-bg: #1e1e2e;
+            --editor-sidebar: #181825;
+            --editor-surface: #11111b;
+            --editor-border: #313244;
+            --editor-border-hover: #45475a;
+            --editor-text: #cdd6f4;
+            --editor-muted: #7f849c;
+            --editor-accent: #89b4fa;
+            --editor-accent-dim: rgba(137, 180, 250, .12);
+            --editor-green: #a6e3a1;
+            --editor-green-dim: rgba(166, 227, 161, .12);
+            --editor-red: #f38ba8;
+            --editor-peach: #fab387;
+            --editor-mauve: #cba6f7;
+            --editor-teal: #94e2d5;
+
+            --radius-sm: 4px;
+            --radius-md: 6px;
+            --radius-lg: 10px;
+            --ease: 150ms ease;
+            --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+        }
+
+        /* ════════════════════════════════════════════════════════════
+   2. BASE / RESET
+   ════════════════════════════════════════════════════════════ */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-mono);
+            background: var(--editor-bg);
+            color: var(--editor-text);
+            margin: 0;
+            padding: 40px 24px;
+            min-height: 100vh;
+        }
+
+        /* ════════════════════════════════════════════════════════════
+   3. SCROLLBAR
+   ════════════════════════════════════════════════════════════ */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #181825;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #45475a;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #585b70;
+        }
+
+        /* ════════════════════════════════════════════════════════════
+   4. LAYOUT
+   ════════════════════════════════════════════════════════════ */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* ════════════════════════════════════════════════════════════
+   5. TYPOGRAPHY
+   ════════════════════════════════════════════════════════════ */
+        h1 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--editor-text);
+            letter-spacing: .3px;
+            margin: 0 0 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--editor-border);
+        }
+
+        .page-subtitle {
+            font-size: 11px;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: var(--editor-accent);
+            margin-bottom: 4px;
+        }
+
+        /* ════════════════════════════════════════════════════════════
+   6. CARD
+   ════════════════════════════════════════════════════════════ */
+        .card {
+            background: var(--editor-sidebar);
+            border: 1px solid var(--editor-border);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+        }
+
+        /* ════════════════════════════════════════════════════════════
+   7. METRICS GRID
+   ════════════════════════════════════════════════════════════ */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .metric-card {
+            background: var(--editor-surface);
+            border: 1px solid var(--editor-border);
+            border-radius: var(--radius-md);
+            padding: 20px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: border-color var(--ease);
+        }
+
+        .metric-card:hover {
+            border-color: var(--editor-border-hover);
+        }
+
+        .metric-card:nth-child(1) {
+            border-left: 3px solid var(--editor-green);
+        }
+
+        .metric-card:nth-child(2) {
+            border-left: 3px solid var(--editor-red);
+        }
+
+        .metric-card:nth-child(3) {
+            border-left: 3px solid var(--editor-accent);
+        }
+
+        .metric-title {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: var(--editor-muted);
+        }
+
+        .metric-value {
+            font-size: 30px;
+            font-weight: 600;
+            color: var(--editor-text);
+            letter-spacing: -.5px;
+            line-height: 1;
+        }
+
+        .metric-card:nth-child(1) .metric-value {
+            color: var(--editor-green);
+        }
+
+        .metric-card:nth-child(2) .metric-value {
+            color: var(--editor-red);
+        }
+
+        .metric-card:nth-child(3) .metric-value {
+            color: var(--editor-accent);
+        }
+
+        /* ════════════════════════════════════════════════════════════
+   8. BUTTON
+   ════════════════════════════════════════════════════════════ */
+        .btn-primary {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 11px 16px;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: .3px;
+            border-radius: var(--radius-md);
+            border: 1px solid transparent;
+            cursor: pointer;
+            background: var(--editor-accent);
+            color: var(--editor-bg);
+            transition: opacity var(--ease), transform var(--ease);
+        }
+
+        .btn-primary:hover {
+            opacity: .9;
+        }
+
+        .btn-primary:active {
+            transform: scale(.98);
+        }
+
+        /* ════════════════════════════════════════════════════════════
+   9. STATUS BAR
+   ════════════════════════════════════════════════════════════ */
+        .status-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 16px;
+            padding-top: 14px;
+            border-top: 1px solid var(--editor-border);
+        }
+
+        .status-dot {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: var(--editor-muted);
+        }
+
+        .status-dot::before {
+            content: '';
+            display: block;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--editor-green);
+            box-shadow: 0 0 0 2px rgba(166, 227, 161, .2);
+        }
+
+        .last-updated {
+            font-size: 11px;
+            color: var(--editor-muted);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="card">
+
+            <div class="page-subtitle">CDN Observability</div>
+            <h1>SwiftEdgeCDN Metrics Dashboard</h1>
+
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-title">Cache Hits</div>
+                    <div class="metric-value" id="cacheHits">—</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Cache Misses</div>
+                    <div class="metric-value" id="cacheMisses">—</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Bandwidth Saved (bytes)</div>
+                    <div class="metric-value" id="bytesSaved">—</div>
+                </div>
+            </div>
+
+            <button class="btn-primary" onclick="fetchMetrics()">Refresh Metrics</button>
+
+            <div class="status-bar">
+                <span class="status-dot">Auto-refreshing every 5s</span>
+                <span class="last-updated" id="lastUpdated">Never</span>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        async function fetchMetrics() {
+            try {
+                const response = await fetch('/api/v1/metrics');
+                const data = await response.json();
+                document.getElementById('cacheHits').innerText = data.cacheHits.toLocaleString();
+                document.getElementById('cacheMisses').innerText = data.cacheMisses.toLocaleString();
+                document.getElementById('bytesSaved').innerText = data.bytesSaved.toLocaleString();
+                document.getElementById('lastUpdated').innerText =
+                    'Updated ' + new Date().toLocaleTimeString();
+            } catch (error) {
+                console.error('Error fetching metrics:', error);
+                alert('Failed to load metrics. Is the server running?');
+            }
+        }
+
+        fetchMetrics();
+        setInterval(fetchMetrics, 5000);
+    </script>
+</body>
+
+</html>
